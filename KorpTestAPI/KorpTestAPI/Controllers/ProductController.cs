@@ -47,7 +47,7 @@ namespace KorpTestAPI.Controllers
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            if (await _productRepo.ExistByCode(productDto.Code)) return BadRequest("Another product have the same code");
+            if (await _productRepo.ExistByCode(productDto.Code)) return Conflict("Another product have the same code");
 
             var productModel = productDto.ToProductFromCreateDto();
 
@@ -74,8 +74,10 @@ namespace KorpTestAPI.Controllers
         public async Task<IActionResult> Delete([FromRoute]int id)
         {
             var productModel = await _productRepo.DeleteAsync(id);
+
             if (productModel == null) return NotFound("Product not found");
-            return Ok("Product Deleted!");
+
+            return Ok("Deleted Product with ID: " + id);
         }
     }
 }

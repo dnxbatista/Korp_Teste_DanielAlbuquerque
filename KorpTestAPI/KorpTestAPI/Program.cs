@@ -18,6 +18,7 @@ builder.Services.AddDbContext<ApplicationDBContext>(options =>
 });
 
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
 
 var app = builder.Build();
 
