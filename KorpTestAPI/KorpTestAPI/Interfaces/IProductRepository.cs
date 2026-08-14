@@ -13,5 +13,7 @@ namespace KorpTestAPI.Interfaces
         Task<Product> CreateAsync(Product productDto);
         Task<Product?> GetByIdAsync(int id);
         Task<Product?> UpdateAsync(int id, UpdateProductRequestDto productDto);
+        Task<Product?> DeleteAsync(int id);
+        Task<bool> ExistByCode(string code);
     }
 }

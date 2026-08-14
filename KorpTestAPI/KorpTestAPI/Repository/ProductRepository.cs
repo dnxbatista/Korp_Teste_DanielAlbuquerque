@@ -25,6 +25,23 @@ namespace KorpTestAPI.Repository
             return productModel;
         }
 
+        public async Task<Product?> DeleteAsync(int id)
+        {
+            var productModel = await _context.Products.FirstOrDefaultAsync(p => p.Id == id);
+
+            if (productModel == null) return null;
+
+            _context.Products.Remove(productModel);
+            await _context.SaveChangesAsync();
+            
+            return productModel;
+        }
+
+        public async Task<bool> ExistByCode(string code)
+        {
+            return await _context.Products.AnyAsync(p => p.Code.ToLower() == code.ToLower());
+        }
+
         public async Task<List<Product>> GetAllAsync()
         {
             return await _context.Products.ToListAsync();

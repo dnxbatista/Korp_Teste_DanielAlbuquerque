@@ -37,7 +37,7 @@ namespace KorpTestAPI.Controllers
 
             var product = await _productRepo.GetByIdAsync(id);
 
-            if (product == null) return NotFound();
+            if (product == null) return NotFound("Product not found");
 
             return Ok(product);
         }
@@ -47,9 +47,35 @@ namespace KorpTestAPI.Controllers
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
+            if (await _productRepo.ExistByCode(productDto.Code)) return BadRequest("Another product have the same code");
+
             var productModel = productDto.ToProductFromCreateDto();
+
             await _productRepo.CreateAsync(productModel);
+
             return CreatedAtAction(nameof(GetById), new {id = productModel.Id}, productModel);
+        }
+
+        [HttpPut]
+        [Route("{id:int}")]
+        public async Task<IActionResult> Update([FromRoute]int id, [FromBody] UpdateProductRequestDto productDto)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var productModel = await _productRepo.UpdateAsync(id, productDto);
+
+            if (productModel == null) return NotFound("Product not found");
+
+            return Ok(productModel);
+        }
+
+        [HttpDelete]
+        [Route("{id}")]
+        public async Task<IActionResult> Delete([FromRoute]int id)
+        {
+            var productModel = await _productRepo.DeleteAsync(id);
+            if (productModel == null) return NotFound("Product not found");
+            return Ok("Product Deleted!");
         }
     }
 }
