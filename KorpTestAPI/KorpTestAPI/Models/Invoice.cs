@@ -11,7 +11,7 @@ namespace KorpTestAPI.Models
         public int Id { get; set; }
         public int Number { get; set; }
         public InvoiceStatus Status { get; set; }
-        public List<Product> Products { get; set; } = [];
+        public List<InvoiceItem> InvoiceItems { get; set; } = [];
         public DateTime CreatedAt { get; set; }
     }
 }

@@ -41,7 +41,31 @@ namespace KorpTestAPI.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Number")
+                        .IsUnique();
+
                     b.ToTable("Invoices");
+                });
+
+            modelBuilder.Entity("KorpTestAPI.Models.InvoiceItem", b =>
+                {
+                    b.Property<int>("InvoiceId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.HasKey("InvoiceId", "ProductId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("InvoiceItem");
                 });
 
             modelBuilder.Entity("KorpTestAPI.Models.Product", b =>
@@ -63,9 +87,6 @@ namespace KorpTestAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("InvoiceId")
-                        .HasColumnType("int");
-
                     b.Property<int>("StockQuantity")
                         .HasColumnType("int");
 
@@ -77,21 +98,36 @@ namespace KorpTestAPI.Migrations
                     b.HasIndex("Code")
                         .IsUnique();
 
-                    b.HasIndex("InvoiceId");
-
                     b.ToTable("Products");
                 });
 
-            modelBuilder.Entity("KorpTestAPI.Models.Product", b =>
+            modelBuilder.Entity("KorpTestAPI.Models.InvoiceItem", b =>
                 {
-                    b.HasOne("KorpTestAPI.Models.Invoice", null)
-                        .WithMany("Products")
-                        .HasForeignKey("InvoiceId");
+                    b.HasOne("KorpTestAPI.Models.Invoice", "Invoice")
+                        .WithMany("InvoiceItems")
+                        .HasForeignKey("InvoiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("KorpTestAPI.Models.Product", "Product")
+                        .WithMany("InvoiceItems")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Invoice");
+
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("KorpTestAPI.Models.Invoice", b =>
                 {
-                    b.Navigation("Products");
+                    b.Navigation("InvoiceItems");
+                });
+
+            modelBuilder.Entity("KorpTestAPI.Models.Product", b =>
+                {
+                    b.Navigation("InvoiceItems");
                 });
 #pragma warning restore 612, 618
         }
