@@ -1,6 +1,7 @@
 ﻿using KorpTestAPI.Data;
 using KorpTestAPI.Interfaces;
 using KorpTestAPI.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace KorpTestAPI.Repository
 {
@@ -22,7 +23,7 @@ namespace KorpTestAPI.Repository
 
         public async Task<InvoiceItem?> DeleteInvoiceItem(int id)
         {
-            var invoiceItem = _context.InvoiceItems.FirstOrDefault(i => i.Id == id);
+            var invoiceItem = await _context.InvoiceItems.FirstOrDefaultAsync(i => i.Id == id);
 
             if (invoiceItem == null) return null;
 
@@ -33,16 +34,20 @@ namespace KorpTestAPI.Repository
 
         public async Task<List<InvoiceItem>> GetInvoiceItemsWithProduct(string productCode)
         {
-            var invoices = _context.InvoiceItems.Where(i => i.Product.Code.ToLower() == productCode.ToLower()).ToList();
+            var invoices = await _context.InvoiceItems
+                .Include(i => i.Product)
+                .Where(i => i.Product.Code.ToLower() == productCode.ToLower())
+                .ToListAsync();
+
             return invoices;
         }
 
         public async Task<InvoiceItem?> UpdateInvoiceItem(int id, InvoiceItem invoiceItem)
         {
-            var existingInvoiceItem = _context.InvoiceItems.FirstOrDefault(i => i.Id == id);
+            var existingInvoiceItem = await _context.InvoiceItems.FirstOrDefaultAsync(i => i.Id == id);
 
             if (existingInvoiceItem == null) return null;
-            
+
             existingInvoiceItem.Quantity = invoiceItem.Quantity;
             await _context.SaveChangesAsync();
             return existingInvoiceItem;

@@ -1,4 +1,5 @@
 ﻿using KorpTestAPI.DTOs.Invoice;
+using KorpTestAPI.Enums;
 using KorpTestAPI.Interfaces;
 using KorpTestAPI.Mappers;
 using Microsoft.AspNetCore.Mvc;
@@ -40,16 +41,30 @@ namespace KorpTestAPI.Controllers
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            if (await _invoiceRepo.ExistByNumber(invoiceDto.Number))
-            {
-                return Conflict("Invoice with this number already exists");
-            }
-
             var invoiceModel = invoiceDto.FromCreateToInvoice();
+            var invoices = await _invoiceRepo.GetAllAsync();
+            invoiceModel.Number = invoices.Count == 0 ? 1 : invoices.Max(i => i.Number) + 1;
+            invoiceModel.Status = InvoiceStatus.Open;
 
             var createdInvoice = await _invoiceRepo.CreateAsync(invoiceModel);
 
             return CreatedAtAction(nameof(GetById), new { id = createdInvoice.Id }, createdInvoice);
+        }
+
+        [HttpPost]
+        [Route("{id:int}/print")]
+        public async Task<IActionResult> Print([FromRoute] int id)
+        {
+            var invoiceModel = await _invoiceRepo.GetByIdAsync(id);
+
+            if (invoiceModel == null) return NotFound("Invoice not found");
+            if (invoiceModel.Status != InvoiceStatus.Open) return BadRequest("Only open invoices can be printed");
+
+            var finalizedInvoice = await _invoiceRepo.FinalizeAsync(id);
+
+            if (finalizedInvoice == null) return BadRequest("Unable to print invoice");
+
+            return Ok(finalizedInvoice);
         }
 
         [HttpPut]

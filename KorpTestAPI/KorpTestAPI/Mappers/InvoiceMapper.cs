@@ -1,4 +1,5 @@
 ﻿using KorpTestAPI.DTOs.Invoice;
+using KorpTestAPI.Enums;
 using KorpTestAPI.Models;
 
 namespace KorpTestAPI.Mappers
@@ -10,7 +11,8 @@ namespace KorpTestAPI.Mappers
             return new Invoice
             {
                 Number = invoiceDto.Number,
-                Status = invoiceDto.Status
+                Status = InvoiceStatus.Open,
+                CreatedAt = DateTime.Now
             };
         }
 

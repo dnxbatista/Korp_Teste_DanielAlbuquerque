@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace KorpTestAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class AddedBuildOptionManyToMany : Migration
+    public partial class RemakingMigrationsAgain : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KorpTestAPI.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    [Migration("20260814143146_AddedBuildOptionManyToMany")]
-    partial class AddedBuildOptionManyToMany
+    [Migration("20260815011716_RemakingMigrationsAgain")]
+    partial class RemakingMigrationsAgain
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

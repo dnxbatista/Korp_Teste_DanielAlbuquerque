@@ -1,7 +1,7 @@
 ﻿using KorpTestAPI.DTOs.InvoiceItem;
+using KorpTestAPI.Enums;
 using KorpTestAPI.Interfaces;
 using KorpTestAPI.Mappers;
-using KorpTestAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KorpTestAPI.Controllers
@@ -32,17 +32,22 @@ namespace KorpTestAPI.Controllers
         public async Task<IActionResult> CreateInvoiceItem([FromBody] CreateInvoiceItemRequestDto invoiceDto)
         {
             if(!ModelState.IsValid) return BadRequest(ModelState);
-            // CHECKS (!NOT GOOD WAY TO DO IT, BUT FOR THE PURPOSE OF THIS API, IT'S OKAY)
             var productModel = await _productRepo.GetByIdAsync(invoiceDto.ProductId);
             var invoiceModel = await _invoiceRepo.GetByIdAsync(invoiceDto.InvoiceId);
-            if (productModel == null)
+
+            if (invoiceModel == null)
             {
                 return NotFound($"Invoice with ID {invoiceDto.InvoiceId} not found.");
             }
 
-            if (invoiceModel == null)
+            if (invoiceModel.Status != InvoiceStatus.Open)
             {
-                return NotFound($"Product with code {invoiceDto.ProductId} not found.");
+                return BadRequest("Only open invoices can receive items.");
+            }
+
+            if (productModel == null)
+            {
+                return NotFound($"Product with ID {invoiceDto.ProductId} not found.");
             }
 
             if (invoiceDto.Quantity > productModel.StockQuantity)
@@ -54,8 +59,8 @@ namespace KorpTestAPI.Controllers
             return CreatedAtAction(nameof(CreateInvoiceItem), new { id = createdInvoiceItem.Id }, createdInvoiceItem);
         }
 
-        [HttpPut]
-        public async Task<IActionResult> UpdateInvoiceItem(int id, [FromBody] UpdateInvoiceItemRequestDto invoiceDto)
+        [HttpPut("{id:int}")]
+        public async Task<IActionResult> UpdateInvoiceItem([FromRoute] int id, [FromBody] UpdateInvoiceItemRequestDto invoiceDto)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
@@ -66,8 +71,8 @@ namespace KorpTestAPI.Controllers
             return Ok(updatedInvoiceItem.FromInvoiceItemToInvoiceDto());
         }
 
-        [HttpDelete]
-        public async Task<IActionResult> DeleteInvoiceItem(int id)
+        [HttpDelete("{id:int}")]
+        public async Task<IActionResult> DeleteInvoiceItem([FromRoute] int id)
         {
             var deletedInvoiceItem = await _invoiceItemRepo.DeleteInvoiceItem(id);
 

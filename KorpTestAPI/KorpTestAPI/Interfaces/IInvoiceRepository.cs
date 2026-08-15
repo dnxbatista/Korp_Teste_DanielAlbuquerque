@@ -14,5 +14,6 @@ namespace KorpTestAPI.Interfaces
         Task<Invoice?> UpdateAsync(int id, UpdateInvoiceRequestDto invoiceDto);
         Task<Invoice?> DeleteAsync(int id);
         Task<bool> ExistByNumber(int id); // This method checks if an invoice with the given number exists in the database.
+        Task<Invoice?> FinalizeAsync(int id);
     }
 }
