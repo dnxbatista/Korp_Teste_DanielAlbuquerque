@@ -47,6 +47,11 @@ namespace KorpTestAPI.Repository
             return await _context.Products.ToListAsync();
         }
 
+        public async Task<Product?> GetByCodeAsync(string code)
+        {
+            return await _context.Products.FirstOrDefaultAsync(p => p.Code.ToLower() == code.ToLower());
+        }
+
         public async Task<Product?> GetByIdAsync(int id)
         {
             return await _context.Products.FindAsync(id);

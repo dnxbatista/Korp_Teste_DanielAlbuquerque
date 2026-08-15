@@ -37,12 +37,12 @@ namespace KorpTestAPI.Repository
 
         public async Task<List<Invoice>> GetAllAsync()
         {
-            return await _context.Invoices.ToListAsync();
+            return await _context.Invoices.Include(i => i.InvoiceItems).ToListAsync(); // 
         }
 
         public async Task<Invoice?> GetByIdAsync(int id)
         {
-            var invoiceModel = await _context.Invoices.FirstOrDefaultAsync(i => i.Id == id);
+            var invoiceModel = await _context.Invoices.Include(i => i.InvoiceItems).FirstOrDefaultAsync(i => i.Id == id);
             return invoiceModel;
         }
 
