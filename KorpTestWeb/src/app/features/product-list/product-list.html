@@ -1,0 +1,22 @@
+<h3> Product List </h3>
+
+@if (productResource.isLoading()) {
+    <p> loading products </p>
+}
+
+@if (productResource.error()) {
+    <p style="color: red;">Failed to load products</p>
+}
+
+<ul>
+    @for (product of productResource.value(); track product.id) 
+    {
+        <li>{{product.code}} - {{product.description}}</li>
+    } @empty 
+    {
+        @if (!productResource.isLoading())
+        {
+            <li>No products found.</li>
+        }
+    }
+</ul>
