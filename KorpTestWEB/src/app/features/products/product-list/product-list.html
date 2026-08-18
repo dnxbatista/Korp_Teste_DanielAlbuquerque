@@ -1,0 +1,46 @@
+<section>
+  <h1>Products</h1>
+
+  <button (click)="newProduct()">New product</button>
+
+  <!-- Loading state -->
+  @if (loading) {
+    <p>Loading...</p>
+  }
+
+  <!-- Data display using async pipe -->
+  @if (!loading && (products$ | async); as products) {
+    @if (products.length > 0) {
+      <table>
+        <thead>
+          <tr>
+            <th>Code</th>
+            <th>Description</th>
+            <th>Stock</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (product of products; track product.id) {
+            <tr>
+              <td>{{ product.code }}</td>
+              <td>{{ product.description }}</td>
+              <td>{{ product.stockQuantity }}</td>
+              <td>
+                <button (click)="editProduct(product)">Edit</button>
+                <button (click)="deleteProduct(product)">Delete</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    } @else {
+      <p>No products yet.</p>
+    }
+  }
+
+  <!-- Optional debug (remove in production) -->
+  <p>Loading: {{ loading }}</p>
+  <p>Products length: {{ (products$ | async)?.length ?? 0 }}</p>
+  <pre>{{ products$ | async | json }}</pre>
+</section>
