@@ -1,0 +1,112 @@
+<mat-card class="invoice-detail-card">
+  <mat-card-header>
+    <mat-card-title>
+      Invoice #{{ invoice()?.number }}
+      <mat-chip [color]="invoice()?.status === 0 ? 'primary' : 'warn'" selected class="status-chip">
+        {{ getStatusLabel(invoice()?.status ?? 0) }}
+      </mat-chip>
+    </mat-card-title>
+    <div class="spacer"></div>
+    <button mat-button (click)="goBack()">
+      <mat-icon>arrow_back</mat-icon> Back
+    </button>
+  </mat-card-header>
+
+  <mat-card-content>
+    @if (loading()) {
+      <div class="loading-container">
+        <mat-spinner diameter="40"></mat-spinner>
+      </div>
+    }
+
+    @if (errorMessage()) {
+      <div class="error-message">
+        <mat-icon color="warn">error_outline</mat-icon>
+        {{ errorMessage() }}
+      </div>
+    }
+
+    @if (!loading() && !errorMessage() && invoice()) {
+      <div class="invoice-info">
+        <p><strong>Created:</strong> {{ invoice()!.createdAt | date:'medium' }}</p>
+        <p><strong>Items:</strong> {{ invoiceItems().length }}</p>
+      </div>
+
+      <!-- Actions: Print/Close -->
+      <div class="action-bar">
+        <button mat-raised-button color="accent" (click)="printInvoice()" [disabled]="!isOpen() || printing() || saving()">
+          @if (printing()) {
+            <mat-spinner diameter="20" class="spinner-inline"></mat-spinner>
+          } @else {
+            <mat-icon>print</mat-icon> Finalize & Print
+          }
+        </button>
+      </div>
+
+      <!-- Items Table -->
+      <h3>Items</h3>
+      <mat-table [dataSource]="invoiceItems()" class="items-table">
+        <ng-container matColumnDef="productCode">
+          <mat-header-cell *matHeaderCellDef>Product Code</mat-header-cell>
+          <mat-cell *matCellDef="let item">{{ item.product?.code || 'N/A' }}</mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="description">
+          <mat-header-cell *matHeaderCellDef>Description</mat-header-cell>
+          <mat-cell *matCellDef="let item">{{ item.product?.description || 'N/A' }}</mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="quantity">
+          <mat-header-cell *matHeaderCellDef>Quantity</mat-header-cell>
+          <mat-cell *matCellDef="let item">{{ item.quantity }}</mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+          <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
+          <mat-cell *matCellDef="let item">
+            @if (isOpen()) {
+              <button mat-icon-button color="primary" (click)="updateItemQuantity(item.id, item.quantity + 1)" matTooltip="Increase">
+                <mat-icon>add</mat-icon>
+              </button>
+              <button mat-icon-button color="primary" (click)="updateItemQuantity(item.id, item.quantity - 1)" matTooltip="Decrease" [disabled]="item.quantity <= 1">
+                <mat-icon>remove</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" (click)="deleteItem(item.id)" matTooltip="Remove">
+                <mat-icon>delete</mat-icon>
+              </button>
+            }
+          </mat-cell>
+        </ng-container>
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+      </mat-table>
+
+      <!-- Add Item Form (only if open) -->
+      @if (isOpen()) {
+        <div class="add-item-form">
+          <h4>Add Product</h4>
+          <form [formGroup]="addItemForm" (ngSubmit)="addItem()">
+            <mat-form-field appearance="outline">
+              <mat-label>Product</mat-label>
+              <mat-select formControlName="productId">
+                @for (product of products(); track product.id) {
+                  <mat-option [value]="product.id">
+                    {{ product.code }} - {{ product.description }} (Stock: {{ product.stockQuantity }})
+                  </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Quantity</mat-label>
+              <input matInput type="number" formControlName="quantity" min="1" step="1" />
+            </mat-form-field>
+            <button mat-raised-button color="primary" type="submit" [disabled]="saving() || !isOpen()">
+              @if (saving()) {
+                <mat-spinner diameter="20" class="spinner-inline"></mat-spinner>
+              } @else {
+                <mat-icon>add</mat-icon> Add
+              }
+            </button>
+          </form>
+        </div>
+      }
+    }
+  </mat-card-content>
+</mat-card>

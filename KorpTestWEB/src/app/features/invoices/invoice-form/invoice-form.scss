@@ -1,0 +1,23 @@
+.invoice-form-card {
+  max-width: 500px;
+  margin: 40px auto;
+  padding: 24px;
+
+  .info-text {
+    margin: 16px 0;
+    color: #555;
+    line-height: 1.6;
+  }
+
+  .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 20px;
+  }
+
+  .spinner-inline {
+    display: inline-block;
+    margin: 0 8px;
+  }
+}

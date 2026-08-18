@@ -1,0 +1,30 @@
+.product-form-card {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 24px;
+
+  mat-card-header {
+    margin-bottom: 16px;
+  }
+
+  .full-width {
+    width: 100%;
+    margin-bottom: 16px;
+  }
+
+  .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 16px;
+
+    button {
+      min-width: 100px;
+    }
+  }
+
+  .spinner-inline {
+    display: inline-block;
+    margin: 0 8px;
+  }
+}

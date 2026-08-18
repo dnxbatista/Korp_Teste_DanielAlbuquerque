@@ -61,8 +61,7 @@ node_modules/
 /tmp/
 
 # Application configuration local files
-.env
-.env.local
+environment.ts
 
 # Angular CLI cache
 .angular/
