@@ -1,1 +1,30 @@
-<p>invoice-items-table works!</p>
+<table mat-table [dataSource]="items" class="items-table">
+  <ng-container matColumnDef="productCode">
+    <th mat-header-cell *matHeaderCellDef>Product</th>
+    <td mat-cell *matCellDef="let item">{{ item.product?.code }}</td>
+  </ng-container>
+  <ng-container matColumnDef="description">
+    <th mat-header-cell *matHeaderCellDef>Description</th>
+    <td mat-cell *matCellDef="let item">{{ item.product?.description }}</td>
+  </ng-container>
+  <ng-container matColumnDef="quantity">
+    <th mat-header-cell *matHeaderCellDef>Quantity</th>
+    <td mat-cell *matCellDef="let item">{{ item.quantity }}</td>
+  </ng-container>
+  <ng-container matColumnDef="actions">
+    <th mat-header-cell *matHeaderCellDef>Actions</th>
+    <td mat-cell *matCellDef="let item">
+      <button mat-icon-button color="primary" (click)="increase.emit(item)" matTooltip="Increase" [disabled]="!editable">
+        <mat-icon>add</mat-icon>
+      </button>
+      <button mat-icon-button color="primary" (click)="decrease.emit(item)" matTooltip="Decrease" [disabled]="!editable || item.quantity <= 1">
+        <mat-icon>remove</mat-icon>
+      </button>
+      <button mat-icon-button color="warn" (click)="remove.emit(item)" matTooltip="Remove" [disabled]="!editable">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </td>
+  </ng-container>
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+</table>

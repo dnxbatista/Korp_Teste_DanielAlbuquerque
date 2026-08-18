@@ -1,1 +1,21 @@
-<p>invoice-form works!</p>
+<mat-card class="invoice-form-card">
+  <mat-card-header>
+    <mat-card-title>Create New Invoice</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <p class="info-text">
+      A new invoice will be created with a unique number and status <strong>Open</strong>.
+      You can add products to it later.
+    </p>
+    <div class="form-actions">
+      <button mat-button (click)="cancel()">Cancel</button>
+      <button mat-raised-button color="primary" (click)="createInvoice()" [disabled]="loading()">
+        @if (loading()) {
+          <mat-spinner diameter="20" class="spinner-inline"></mat-spinner>
+        } @else {
+          <mat-icon>add</mat-icon> Create Invoice
+        }
+      </button>
+    </div>
+  </mat-card-content>
+</mat-card>

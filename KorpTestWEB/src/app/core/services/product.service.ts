@@ -13,7 +13,7 @@ import { UpdateProductRequestDto } from "../models/dto/update-product-request.dt
     providedIn: 'root'
 })
 export class ProductService {
-    private readonly baseUrl = `${environment.baseApiUrl}/Product`;
+    private readonly baseUrl = `${environment.baseApiUrl}/product`;
 
     constructor(private http: HttpClient) {}
 

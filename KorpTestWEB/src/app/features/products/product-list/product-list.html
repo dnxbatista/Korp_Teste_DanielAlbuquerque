@@ -1,46 +1,79 @@
-<section>
-  <h1>Products</h1>
+<mat-card class="product-list-card">
+  <mat-card-header>
+    <mat-card-title>Products</mat-card-title>
+    <div class="spacer"></div>
+    <button mat-raised-button color="primary" (click)="newProduct()">
+      <mat-icon>add</mat-icon> New Product
+    </button>
+  </mat-card-header>
 
-  <button (click)="newProduct()">New product</button>
+  <mat-card-content>
+    <!-- Search Bar -->
+    <mat-form-field appearance="outline" class="search-field" subscriptSizing="dynamic">
+      <mat-label>Search by code or description</mat-label>
+      <input
+        matInput
+        [ngModel]="searchQuery()"
+        (ngModelChange)="onSearchChange($event)"
+        placeholder="e.g. PROD-001"
+      />
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
 
-  <!-- Loading state -->
-  @if (loading) {
-    <p>Loading...</p>
-  }
-
-  <!-- Data display using async pipe -->
-  @if (!loading && (products$ | async); as products) {
-    @if (products.length > 0) {
-      <table>
-        <thead>
-          <tr>
-            <th>Code</th>
-            <th>Description</th>
-            <th>Stock</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (product of products; track product.id) {
-            <tr>
-              <td>{{ product.code }}</td>
-              <td>{{ product.description }}</td>
-              <td>{{ product.stockQuantity }}</td>
-              <td>
-                <button (click)="editProduct(product)">Edit</button>
-                <button (click)="deleteProduct(product)">Delete</button>
-              </td>
-            </tr>
-          }
-        </tbody>
-      </table>
-    } @else {
-      <p>No products yet.</p>
+    <!-- Loading -->
+    @if (loading()) {
+      <div class="loading-container">
+        <mat-spinner diameter="40"></mat-spinner>
+      </div>
     }
-  }
 
-  <!-- Optional debug (remove in production) -->
-  <p>Loading: {{ loading }}</p>
-  <p>Products length: {{ (products$ | async)?.length ?? 0 }}</p>
-  <pre>{{ products$ | async | json }}</pre>
-</section>
+    <!-- Error -->
+    @if (errorMessage()) {
+      <div class="error-message">
+        <mat-icon color="warn">error_outline</mat-icon>
+        {{ errorMessage() }}
+      </div>
+    }
+
+    <!-- Product List -->
+    @if (!loading() && !errorMessage()) {
+      <mat-list>
+        @for (product of filteredProducts(); track product.id) {
+          <mat-list-item class="product-item">
+            <div matListItemTitle class="product-header">
+              <span class="product-code">{{ product.code }}</span>
+              <span class="product-stock" [class.low-stock]="product.stockQuantity < 10">
+                Stock: {{ product.stockQuantity }}
+              </span>
+            </div>
+            <div matListItemLine class="product-description">
+              {{ product.description }}
+            </div>
+            <div matListItemLine class="product-meta">
+              <span>Created: {{ product.createdAt | date:'short' }}</span>
+              @if (product.updatedAt !== product.createdAt) {
+                <span>Updated: {{ product.updatedAt | date:'short' }}</span>
+              }
+            </div>
+
+            <!-- Actions -->
+            <div matListItemMeta class="product-actions">
+              <button mat-icon-button color="primary" (click)="editProduct(product)" matTooltip="Edit">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" (click)="deleteProduct(product)" matTooltip="Delete">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+            <mat-divider></mat-divider>
+          </mat-list-item>
+        } @empty {
+          <div class="empty-state">
+            <mat-icon>inbox</mat-icon>
+            <p>No products found</p>
+          </div>
+        }
+      </mat-list>
+    }
+  </mat-card-content>
+</mat-card>

@@ -1,1 +1,57 @@
-<p>invoices-list works!</p>
+<mat-card class="invoices-list-card">
+  <mat-card-header>
+    <mat-card-title>Invoices</mat-card-title>
+    <div class="spacer"></div>
+    <button mat-raised-button color="primary" (click)="newInvoice()">
+      <mat-icon>add</mat-icon> New Invoice
+    </button>
+  </mat-card-header>
+
+  <mat-card-content>
+    @if (loading()) {
+      <div class="loading-container">
+        <mat-spinner diameter="40"></mat-spinner>
+      </div>
+    }
+
+    @if (errorMessage()) {
+      <div class="error-message">
+        <mat-icon color="warn">error_outline</mat-icon>
+        {{ errorMessage() }}
+      </div>
+    }
+
+    @if (!loading() && !errorMessage()) {
+      <mat-list>
+        @for (invoice of invoices(); track invoice.id) {
+          <mat-list-item class="invoice-item" (click)="viewInvoice(invoice.id)">
+            <div matListItemTitle class="invoice-header">
+              <span class="invoice-number">#{{ invoice.number }}</span>
+              <mat-chip [color]="invoice.status === 0 ? 'primary' : 'warn'" selected>
+                {{ getStatusLabel(invoice.status) }}
+              </mat-chip>
+            </div>
+            <div matListItemLine class="invoice-meta">
+              <span>Created: {{ invoice.createdAt | date:'short' }}</span>
+              <span>Items: {{ invoice.invoiceItems?.length || 0 }}</span>
+            </div>
+            <div matListItemMeta class="invoice-actions" (click)="$event.stopPropagation()">
+              <button mat-icon-button color="primary" (click)="editInvoice(invoice.id)" matTooltip="Edit status">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" (click)="deleteInvoice(invoice)" matTooltip="Delete">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+            <mat-divider></mat-divider>
+          </mat-list-item>
+        } @empty {
+          <div class="empty-state">
+            <mat-icon>receipt_long</mat-icon>
+            <p>No invoices found</p>
+          </div>
+        }
+      </mat-list>
+    }
+  </mat-card-content>
+</mat-card>
